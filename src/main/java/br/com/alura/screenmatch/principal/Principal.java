@@ -2,12 +2,15 @@ package br.com.alura.screenmatch.principal;
 
 import br.com.alura.screenmatch.model.DadosSerie;
 import br.com.alura.screenmatch.model.DadosTemporada;
+import br.com.alura.screenmatch.model.Serie;
 import br.com.alura.screenmatch.service.ConsumoApi;
 import br.com.alura.screenmatch.service.ConverteDados;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Principal {
@@ -54,7 +57,7 @@ public class Principal {
         System.out.println("Digite o nome da série para busca");
         String nomeSerie = leitura.nextLine();
         String json = consumo.consultarDados(ENDERECO + nomeSerie.replace(" ", "+") + API_KEY);
-        return conversor.obterDados(json, DadosSerie.class);
+        return conversor.converterDados(json, DadosSerie.class);
     }
 
     private void buscarEpisodioPorSerie() {
@@ -68,7 +71,7 @@ public class Principal {
                                     + "&season=" + numeroTemporada
                                     + API_KEY
                     );
-                    return conversor.obterDados(json, DadosTemporada.class);
+                    return conversor.converterDados(json, DadosTemporada.class);
                 })
                 .toList();
 
@@ -76,6 +79,12 @@ public class Principal {
     }
 
     private void listarSeriesBuscadas() {
-        dadosSeriesBuscadas.forEach(System.out::println);
+        List<Serie> series = dadosSeriesBuscadas.stream()
+                .map(Serie::new)
+                .collect(Collectors.toList());
+
+        series.stream()
+                .sorted(Comparator.comparing(Serie::getGenero))
+                .forEach(System.out::println);
     }
 }
