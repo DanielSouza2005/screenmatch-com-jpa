@@ -31,7 +31,7 @@ public class Serie {
     @Column(columnDefinition = "TEXT")
     private String sinopse;
 
-    @Transient
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL)
     private List<Episodio> episodios;
 
     public Serie() {}
@@ -116,6 +116,7 @@ public class Serie {
     }
 
     public void setEpisodios(List<Episodio> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
         this.episodios = episodios;
     }
 
@@ -130,7 +131,6 @@ public class Serie {
                 ", atores='" + atores + '\'' +
                 ", imagem='" + imagem + '\'' +
                 ", sinopse='" + sinopse + '\'' +
-                ", episodios=" + episodios +
                 '}';
     }
 }
