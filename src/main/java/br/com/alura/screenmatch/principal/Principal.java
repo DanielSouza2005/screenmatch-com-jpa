@@ -1,5 +1,6 @@
 package br.com.alura.screenmatch.principal;
 
+import br.com.alura.screenmatch.enums.Categoria;
 import br.com.alura.screenmatch.model.DadosSerie;
 import br.com.alura.screenmatch.model.DadosTemporada;
 import br.com.alura.screenmatch.model.Episodio;
@@ -35,7 +36,12 @@ public class Principal {
             String menu = """
                     1 - Buscar séries
                     2 - Buscar episódios
-                    3 - Listar séries buscadas \n
+                    3 - Listar séries buscadas
+                    4 - Buscar série por título
+                    5 - Buscar série por ator
+                    6 - TOP 5 Séries
+                    7 - Buscar séries por categoria
+                    8 - Buscar séries por quantidade máxima de temporadas e avaliação mínima \n
                     0 - Sair
                     """;
 
@@ -47,6 +53,11 @@ public class Principal {
                 case 1 -> buscarSerieWeb();
                 case 2 -> buscarEpisodioPorSerie();
                 case 3 -> listarSeriesBuscadas();
+                case 4 -> buscarSeriePorTitulo();
+                case 5 -> buscarSeriesPorAtor();
+                case 6 -> buscarTop5Series();
+                case 7 -> buscarSeriesPorCategoria();
+                case 8 -> buscarSeriesPorTotalTemporadasEAvaliacao();
                 case 0 -> System.out.println("Saindo...");
                 default -> System.out.println("Opção inválida");
             }
@@ -113,5 +124,74 @@ public class Principal {
         seriesCadastradas.stream()
                 .sorted(Comparator.comparing(Serie::getGenero))
                 .forEach(System.out::println);
+    }
+
+    private void buscarSeriePorTitulo() {
+        System.out.println("Escolha uma série por nome: ");
+        String nomeSerie = leitura.nextLine();
+
+        Optional<Serie> serieBuscada = serieRepository.findByTituloContainingIgnoreCase(nomeSerie);
+
+        if (serieBuscada.isPresent()) {
+            System.out.println("Dados da série: " + serieBuscada.get());
+        } else {
+            System.out.println("Série não encontrada!");
+        }
+    }
+
+    private void buscarSeriesPorAtor() {
+        System.out.println("Digite o nome de um ator de uma série: ");
+        String nomeAtor = leitura.nextLine();
+
+        Optional<List<Serie>> seriesBuscada = serieRepository.findByAtoresContainingIgnoreCase(nomeAtor);
+
+        if (seriesBuscada.isPresent()) {
+            seriesBuscada.get().forEach(System.out::println);
+        } else {
+            System.out.println("Nenhuma série com esse autor foi encontrada!");
+        }
+    }
+
+    private void buscarTop5Series() {
+        Optional<List<Serie>> seriesBuscada = serieRepository.findTop5ByOrderByAvaliacaoDesc();
+
+        if (seriesBuscada.isPresent()) {
+            seriesBuscada.get().forEach(System.out::println);
+        } else {
+            System.out.println("Nenhuma série com esse autor foi encontrada!");
+        }
+    }
+
+    private void buscarSeriesPorCategoria() {
+        System.out.println("Digite o nome de uma categoria/gênero: ");
+        String nomeCategoria = leitura.nextLine();
+
+        Categoria categoria = Categoria.fromPortuguese(nomeCategoria);
+        Optional<List<Serie>> seriesBuscada = serieRepository.findByGenero(categoria);
+
+        if (seriesBuscada.isPresent()) {
+            seriesBuscada.get().forEach(System.out::println);
+        } else {
+            System.out.println("Nenhuma série com essa categoria foi encontrada!");
+        }
+    }
+
+    private void buscarSeriesPorTotalTemporadasEAvaliacao() {
+        System.out.println("Digite uma quantidade máxima de temporadas: ");
+        int qtdeMaximaTemporadas = leitura.nextInt();
+        leitura.nextLine();
+
+        System.out.println("Digite uma avaliação mínima que a Série deve possuir: ");
+        double avaliacaoMinima = leitura.nextDouble();
+        leitura.nextLine();
+
+        Optional<List<Serie>> seriesBuscada = serieRepository.
+                seriesPorTemporadaEAvaliacao(qtdeMaximaTemporadas, avaliacaoMinima);
+
+        if (seriesBuscada.isPresent()) {
+            seriesBuscada.get().forEach(System.out::println);
+        } else {
+            System.out.println("Nenhuma série com esses critérios foi encontrada!");
+        }
     }
 }
