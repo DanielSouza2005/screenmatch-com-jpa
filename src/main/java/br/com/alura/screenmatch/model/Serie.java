@@ -26,7 +26,7 @@ public class Serie {
     private Categoria genero;
 
     private String atores;
-    private String imagem;
+    private String poster;
 
     @Column(columnDefinition = "TEXT")
     private String sinopse;
@@ -43,7 +43,7 @@ public class Serie {
         this.avaliacao = OptionalDouble.of(Double.parseDouble(dadosSerie.avaliacao())).orElse(0.0);
         this.genero = Categoria.fromString(dadosSerie.genero().split(",")[0].trim());
         this.atores = dadosSerie.atores();
-        this.imagem = dadosSerie.imagem();
+        this.poster = dadosSerie.imagem();
         this.sinopse = ConsultaChatGPT.obterTraducao(dadosSerie.sinopse());
     }
 
@@ -95,12 +95,12 @@ public class Serie {
         this.atores = atores;
     }
 
-    public String getImagem() {
-        return imagem;
+    public String getPoster() {
+        return poster;
     }
 
-    public void setImagem(String imagem) {
-        this.imagem = imagem;
+    public void setPoster(String imagem) {
+        this.poster = imagem;
     }
 
     public String getSinopse() {
@@ -129,7 +129,7 @@ public class Serie {
                 ", avaliacao=" + avaliacao +
                 ", genero=" + genero +
                 ", atores='" + atores + '\'' +
-                ", imagem='" + imagem + '\'' +
+                ", imagem='" + poster + '\'' +
                 ", sinopse='" + sinopse + '\'' +
                 '}';
     }
